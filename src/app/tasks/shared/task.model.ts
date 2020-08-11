@@ -7,12 +7,13 @@ export class Task {
   description: string;
   createdBy: string;
   requiredDate: Date;
+  completed: boolean;
 }
 
 export class CreateTask {
   title: string;
   description: string;
   createdBy: string;
-  requiredDate: string;
+  requiredDate: Date;
   completed: boolean;
 }

@@ -1,28 +1,28 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { catchError, map, tap } from 'rxjs/operators';
-import { Task, CreateTask } from './task.model';
-import { TASKS } from './mock-tasks';
-import { Observable, of } from 'rxjs';
+import { Injectable } from "@angular/core";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { catchError, map, tap } from "rxjs/operators";
+import { Task, CreateTask } from "./task.model";
+import { TASKS } from "./mock-tasks";
+import { Observable, of } from "rxjs";
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class TaskService {
-  private tasksUrl = 'http://172.24.209.112:8080/tasks';
+  private tasksUrl = "http://localhost:8080/api/v1/tasks";
   httpOptions = {
-    headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+    headers: new HttpHeaders({ "Content-Type": "application/json" }),
   };
   constructor(private http: HttpClient) {}
 
   getTasks(): Observable<Task[]> {
-    console.log('Tasks found');
+    console.log("Tasks found");
 
     const tasks = this.http.get<Task[]>(this.tasksUrl).pipe(
       tap((data) => {
-        console.log('Fetched Tasks');
+        console.log("Fetched Tasks");
         console.log(data);
       }),
-      catchError(this.handleError<Task[]>('getTasks', []))
+      catchError(this.handleError<Task[]>("getTasks", []))
     );
 
     return tasks;
@@ -38,7 +38,7 @@ export class TaskService {
   updateTask(task: Task): Observable<any> {
     return this.http.put(this.tasksUrl, task, this.httpOptions).pipe(
       tap((_) => console.log(`updated task id=${task.id}`)),
-      catchError(this.handleError<any>('updateTask'))
+      catchError(this.handleError<any>("updateTask"))
     );
   }
 
@@ -46,17 +46,17 @@ export class TaskService {
   addTask(task: CreateTask): Observable<Task> {
     return this.http.post<Task>(this.tasksUrl, task, this.httpOptions).pipe(
       tap((newTask: Task) => console.log(`added task w/ id=${newTask.id}`)),
-      catchError(this.handleError<Task>('addTask'))
+      catchError(this.handleError<Task>("addTask"))
     );
   }
   /** DELETE: delete the task from the server */
   deleteTask(task: Task | number): Observable<Task> {
-    const id = typeof task === 'number' ? task : task.id;
+    const id = typeof task === "number" ? task : task.id;
     const url = `${this.tasksUrl}/${id}`;
 
     return this.http.delete<Task>(url, this.httpOptions).pipe(
       tap((_) => console.log(`deleted task id=${id}`)),
-      catchError(this.handleError<Task>('deleteTask'))
+      catchError(this.handleError<Task>("deleteTask"))
     );
   }
 
@@ -72,10 +72,10 @@ export class TaskService {
           ? console.log(`found taskes matching "${term}"`)
           : console.log(`no taskes matching "${term}"`)
       ),
-      catchError(this.handleError<Task[]>('searchTaskes', []))
+      catchError(this.handleError<Task[]>("searchTaskes", []))
     );
   }
-  private handleError<T>(operation = 'operation', result?: T) {
+  private handleError<T>(operation = "operation", result?: T) {
     return (error: any): Observable<T> => {
       // TODO: send the error to remote logging infrastructure
       console.error(error); // log to console instead

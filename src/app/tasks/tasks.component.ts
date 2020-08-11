@@ -1,26 +1,36 @@
-import { Component, OnInit } from '@angular/core';
-import { TaskService } from './shared/task.service';
-import { Task } from '../tasks/shared/task.model';
-import { MatTableDataSource } from '@angular/material/table';
+import { Component, OnInit } from "@angular/core";
+import { TaskService } from "./shared/task.service";
+import { Task } from "../tasks/shared/task.model";
+import { FormBuilder } from "@angular/forms";
 
 @Component({
-  selector: 'app-tasks',
-  templateUrl: './tasks.component.html',
-  styleUrls: ['./tasks.component.css'],
+  selector: "app-tasks",
+  templateUrl: "./tasks.component.html",
+  styleUrls: ["./tasks.component.css"],
 })
 export class TasksComponent implements OnInit {
+  inputTaskForm;
   tasks: Task[];
   displayedColumns = [
-    'id',
-    'createdAt',
-    'deletedAt',
-    'title',
-    'description',
-    'createdBy',
-    'requiredDate',
-    'completed',
+    "id",
+    "createdAt",
+    "title",
+    "description",
+    "createdBy",
+    "requiredDate",
+    "completed",
   ];
-  constructor(private taskService: TaskService) {}
+  constructor(
+    private taskService: TaskService,
+    private formBuilder: FormBuilder
+  ) {
+    this.inputTaskForm = this.formBuilder.group({
+      title: "",
+      description: "",
+      completed: true,
+      requiredDate: new Date().toISOString(),
+    });
+  }
 
   ngOnInit(): void {
     this.getTasks();
@@ -31,11 +41,15 @@ export class TasksComponent implements OnInit {
       this.tasks = tasks;
     });
   }
-  add(title: string, description: string): void {
-    title = title.trim();
-    if (!description || !title) {
+  add(task: Task): void {
+    task.title = task.title;
+    task.createdBy = "Jason Scherer";
+    if (!task.description || !task.title) {
       return;
     }
+    this.taskService.addTask(task).subscribe((task) => {
+      this.tasks.push(task);
+    });
   }
   delete(task: Task): void {
     this.tasks = this.tasks.filter((foundTask) => foundTask !== task);
